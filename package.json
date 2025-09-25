@@ -16,6 +16,8 @@
     "@tailwindcss/vite": "^4.1.13",
     "@tanstack/react-router": "^1.131.50",
     "@tanstack/react-router-devtools": "^1.131.50",
+    "axios": "^1.12.2",
+    "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
@@ -27,6 +29,7 @@
     "tailwindcss": "^4.1.13",
     "tailwindcss-animate": "^1.0.7",
     "tw-animate-css": "^1.3.8",
+    "uuidv7": "^1.0.2",
     "zod": "^4.1.11",
     "zustand": "^5.0.8"
   },

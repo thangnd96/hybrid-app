@@ -11,9 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as NoneAuthRouteImport } from './routes/_noneAuth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as NoneAuthSignUpRouteImport } from './routes/_noneAuth/sign-up'
 import { Route as NoneAuthLoginRouteImport } from './routes/_noneAuth/login'
+import { Route as AuthenticatedPostIdRouteImport } from './routes/_authenticated/$postId'
 
 const NoneAuthRoute = NoneAuthRouteImport.update({
   id: '/_noneAuth',
@@ -23,10 +24,10 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthenticatedRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const NoneAuthSignUpRoute = NoneAuthSignUpRouteImport.update({
   id: '/sign-up',
@@ -38,40 +39,50 @@ const NoneAuthLoginRoute = NoneAuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => NoneAuthRoute,
 } as any)
+const AuthenticatedPostIdRoute = AuthenticatedPostIdRouteImport.update({
+  id: '/$postId',
+  path: '/$postId',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/$postId': typeof AuthenticatedPostIdRoute
   '/login': typeof NoneAuthLoginRoute
   '/sign-up': typeof NoneAuthSignUpRoute
-  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/$postId': typeof AuthenticatedPostIdRoute
   '/login': typeof NoneAuthLoginRoute
   '/sign-up': typeof NoneAuthSignUpRoute
-  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/_noneAuth': typeof NoneAuthRouteWithChildren
+  '/_authenticated/$postId': typeof AuthenticatedPostIdRoute
   '/_noneAuth/login': typeof NoneAuthLoginRoute
   '/_noneAuth/sign-up': typeof NoneAuthSignUpRoute
-  '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/login' | '/sign-up' | '/'
+  fullPaths: '/' | '/$postId' | '/login' | '/sign-up'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/sign-up' | '/'
+  to: '/' | '/$postId' | '/login' | '/sign-up'
   id:
     | '__root__'
+    | '/'
     | '/_authenticated'
     | '/_noneAuth'
+    | '/_authenticated/$postId'
     | '/_noneAuth/login'
     | '/_noneAuth/sign-up'
-    | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   NoneAuthRoute: typeof NoneAuthRouteWithChildren
 }
@@ -92,12 +103,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/': {
-      id: '/_authenticated/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_noneAuth/sign-up': {
       id: '/_noneAuth/sign-up'
@@ -113,15 +124,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NoneAuthLoginRouteImport
       parentRoute: typeof NoneAuthRoute
     }
+    '/_authenticated/$postId': {
+      id: '/_authenticated/$postId'
+      path: '/$postId'
+      fullPath: '/$postId'
+      preLoaderRoute: typeof AuthenticatedPostIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedPostIdRoute: typeof AuthenticatedPostIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedPostIdRoute: AuthenticatedPostIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -143,6 +161,7 @@ const NoneAuthRouteWithChildren = NoneAuthRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   NoneAuthRoute: NoneAuthRouteWithChildren,
 }

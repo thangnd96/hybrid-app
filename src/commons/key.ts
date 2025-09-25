@@ -1,3 +1,3 @@
 export const KEYS = {
-  AUTH_STORAGE: 'auth-storage',
+  AUTH_STORAGE: 'auth-storage-v1',
 };

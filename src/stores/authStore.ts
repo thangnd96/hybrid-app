@@ -1,26 +1,40 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
-import { type AuthState } from '@/lib/auth';
-import { KEYS } from "@/commons/key";
+import { type AuthState, type User } from '@/commons/types';
+import { KEYS } from '@/commons/key';
 
 // Replace with the old key you want to remove
-const OLD_KEY = "";
+const OLD_KEY = '';
 
-if (OLD_KEY !== KEYS.AUTH_STORAGE) {
+if (OLD_KEY && OLD_KEY !== KEYS.AUTH_STORAGE) {
   localStorage.removeItem(OLD_KEY);
 }
 
+function generateToken(user: User): string | null {
+  return btoa(JSON.stringify(user));
+}
+
 interface Auth extends AuthState {
-  setUser: (user: AuthState['user']) => void;
+  token: string | null;
+  login: (user: User) => void;
+  register: (user: User) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<Auth>()(
   persist(
     set => ({
+      token: null,
       user: null,
-      setUser: (user: AuthState['user']) => set({ user }),
+      userData: [],
+      login: (user: User) => set({ user, token: generateToken(user) }),
+      register: (user: User) =>
+        set(state => ({
+          user,
+          token: generateToken(user),
+          userData: user ? [...state.userData, user] : [...state.userData],
+        })),
       logout: () => set({ user: null }),
     }),
     {

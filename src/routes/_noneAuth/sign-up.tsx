@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { useState } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +18,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { authService } from '@/lib/auth';
 import { useRouter } from '@tanstack/react-router';
 import { PageTransition } from '@/components/ui/page-transition';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_noneAuth/sign-up')({
   component: RouteComponent,
@@ -25,7 +26,7 @@ export const Route = createFileRoute('/_noneAuth/sign-up')({
 
 function RouteComponent() {
   const router = useRouter();
-  const setUser = useAuthStore(state => state.setUser);
+  const register = useAuthStore(state => state.register);
 
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -34,17 +35,40 @@ function RouteComponent() {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
 
-  const register = async (email: string, password: string, username: string) => {
+  const handleInputChange =
+    (type: 'username' | 'email' | 'password' | 'confirmPassword') =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+      switch (type) {
+        case 'username':
+          setUsername(value);
+          break;
+        case 'email':
+          setEmail(value);
+          break;
+        case 'password':
+          setPassword(value);
+          break;
+        case 'confirmPassword':
+          setConfirmPassword(value);
+          break;
+        default:
+          break;
+      }
+    };
+
+  const handleRegister = async (email: string, password: string, username: string) => {
     setIsLoading(true);
 
     try {
       const user = await authService.register(email, password, username);
 
       if (user) {
-        setUser(user);
+        register(user);
         await router.invalidate();
       }
     } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Register failed');
       // handle error
     } finally {
       setIsLoading(false);
@@ -56,21 +80,6 @@ function RouteComponent() {
     setError('');
 
     // Validation
-    if (!email || !password || !confirmPassword || !username) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    if (!email.includes('@')) {
-      setError('Please enter a valid email address');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
-
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -86,11 +95,7 @@ function RouteComponent() {
       return;
     }
 
-    try {
-      await register(email, password, username);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
-    }
+    handleRegister(email, password, username);
   };
 
   return (
@@ -105,22 +110,17 @@ function RouteComponent() {
 
         <form onSubmit={handleSubmit}>
           <CardContent className='space-y-4'>
-            {error && (
-              <Alert variant='destructive'>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
             <div className='space-y-2'>
               <Label htmlFor='username'>Username</Label>
               <div className='relative'>
                 <User className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
                 <Input
+                  required
                   id='username'
                   type='text'
                   placeholder='Choose a username'
                   value={username}
-                  onChange={e => setUsername(e.target.value)}
+                  onChange={handleInputChange('username')}
                   className='pl-9'
                   disabled={isLoading}
                   autoComplete='username'
@@ -133,11 +133,12 @@ function RouteComponent() {
               <div className='relative'>
                 <Mail className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
                 <Input
+                  required
                   id='email'
                   type='email'
                   placeholder='Enter your email'
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={handleInputChange('email')}
                   className='pl-9'
                   disabled={isLoading}
                   autoComplete='email'
@@ -150,11 +151,12 @@ function RouteComponent() {
               <div className='relative'>
                 <Lock className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
                 <Input
+                  required
                   id='password'
                   type='password'
                   placeholder='Create a password'
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={handleInputChange('password')}
                   className='pl-9'
                   disabled={isLoading}
                   autoComplete='new-password'
@@ -167,17 +169,24 @@ function RouteComponent() {
               <div className='relative'>
                 <Lock className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
                 <Input
+                  required
                   id='confirmPassword'
                   type='password'
                   placeholder='Confirm your password'
                   value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
+                  onChange={handleInputChange('confirmPassword')}
                   className='pl-9'
                   disabled={isLoading}
                   autoComplete='new-password'
                 />
               </div>
             </div>
+
+            {error && (
+              <Alert variant='destructive'>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
           </CardContent>
 
           <CardFooter className='flex flex-col space-y-4'>
@@ -194,13 +203,14 @@ function RouteComponent() {
 
             <div className='text-center text-sm text-muted-foreground'>
               Already have an account?{' '}
-              <Link to='/login'>
-                <button
+              <Link to='/login' preload={false}>
+                <Button
                   type='button'
+                  variant='link'
                   className='text-primary hover:underline focus:outline-none'
                   disabled={isLoading}>
                   Sign in
-                </button>
+                </Button>
               </Link>
             </div>
           </CardFooter>
