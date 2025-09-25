@@ -1,8 +1,8 @@
 import { KEYS } from '@/commons/key';
 import { sleep } from './utils';
-import bcrypt from 'bcryptjs';
 import { uuidv7 } from 'uuidv7';
 import type { User } from '@/commons/types';
+import SHA256 from 'crypto-js/sha256';
 
 const AVATARS = [
   'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
@@ -16,7 +16,9 @@ function getRandomAvatar(): string {
 }
 
 function hashPassword(password: string): string {
-  return bcrypt.hashSync(password, 10);
+  const hashPassword = SHA256(password);
+
+  return hashPassword.toString();
 }
 
 async function findUser({ email, password }: { email: string; password: string }) {

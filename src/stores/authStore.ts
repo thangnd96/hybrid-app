@@ -35,7 +35,7 @@ export const useAuthStore = create<Auth>()(
           token: generateToken(user),
           userData: user ? [...state.userData, user] : [...state.userData],
         })),
-      logout: () => set({ user: null }),
+      logout: () => set({ user: null, token: null }),
     }),
     {
       name: KEYS.AUTH_STORAGE,

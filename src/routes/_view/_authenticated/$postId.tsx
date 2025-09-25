@@ -1,7 +1,7 @@
 import { sleep } from '@/lib/utils';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/_authenticated/$postId')({
+export const Route = createFileRoute('/_view/_authenticated/$postId')({
   component: RouteComponent,
   loader: async ({ params: { postId } }) => {
     await sleep(3000);

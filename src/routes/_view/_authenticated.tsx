@@ -10,7 +10,7 @@ const AuthComponent: FunctionComponent = () => {
   );
 };
 
-export const Route = createFileRoute('/_authenticated')({
+export const Route = createFileRoute('/_view/_authenticated')({
   beforeLoad: ({ location }) => {
     const user = useAuthStore.getState().user;
     if (!user) {

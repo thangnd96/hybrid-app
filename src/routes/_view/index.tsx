@@ -2,7 +2,7 @@ import type { Post } from '@/commons/types';
 import { api } from '@/lib/api';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_view/')({
   component: RouteComponent,
   loader: async ({ location: { search = {} } }) => {
     const { page = 1 } = search as { page?: number };
