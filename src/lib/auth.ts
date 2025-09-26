@@ -1,18 +1,12 @@
 import { KEYS } from '@/commons/key';
 import { sleep } from './utils';
 import { uuidv7 } from 'uuidv7';
-import type { User } from '@/commons/types';
+import type { RegisterBody, User } from '@/commons/types';
 import SHA256 from 'crypto-js/sha256';
+import { api } from './api';
 
-const AVATARS = [
-  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
-  'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
-];
-
-function getRandomAvatar(): string {
-  const randomIndex = Math.floor(Math.random() * AVATARS.length);
-
-  return AVATARS[randomIndex];
+function generateToken(user: unknown): string {
+  return btoa(JSON.stringify(user));
 }
 
 function hashPassword(password: string): string {
@@ -21,12 +15,13 @@ function hashPassword(password: string): string {
   return hashPassword.toString();
 }
 
-async function findUser({ email, password }: { email: string; password: string }) {
+async function findUser({ username, password }: { username: string; password: string }) {
   const authStore = await JSON.parse(localStorage.getItem(KEYS.AUTH_STORAGE) || '{}');
   await sleep(1000);
+  console.log('🚀 ~ authStore:', authStore);
 
   const user = authStore?.state?.userData.find(
-    (user: User) => user.email === email && user.password === hashPassword(password)
+    (user: User) => user.username === username && user.password === hashPassword(password)
   );
 
   return user;
@@ -34,34 +29,42 @@ async function findUser({ email, password }: { email: string; password: string }
 
 // Mock authentication functions
 export const authService = {
-  login: async (body: { email: string; password: string }): Promise<User> => {
+  login: async (body: { username: string; password: string }): Promise<User> => {
     // Simulate API call delay
     const user = await findUser(body);
 
-    if (!user) {
+    if (user) return user;
+
+    try {
+      const { data } = await api.post<User>('/user/login', body);
+
+      return data;
+    } catch {
       throw new Error('Invalid email or password');
     }
-
-    return user;
   },
 
-  register: async (email: string, password: string, username: string): Promise<User> => {
+  register: async (body: RegisterBody): Promise<User> => {
+    const { password, username, ...payload } = body;
     // Check if user already exists
-    const existingUser = await findUser({ email, password });
+    const existingUser = await findUser({ username, password });
 
     if (existingUser) {
       throw new Error('User already exists');
     }
 
-    const newUser: User = {
+    const dataUser: Omit<User, 'accessToken' | 'refreshToken'> = {
       id: uuidv7(),
-      email,
-      username,
-      avatar: getRandomAvatar(),
+      image: `https://dummyjson.com/icon/${username}/128`,
       password: hashPassword(password),
-      createdAt: new Date().toISOString(),
+      username,
+      ...payload,
     };
 
-    return newUser;
+    return {
+      ...dataUser,
+      accessToken: generateToken(dataUser),
+      refreshToken: generateToken(dataUser),
+    };
   },
 };

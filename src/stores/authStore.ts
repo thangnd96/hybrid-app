@@ -11,10 +11,6 @@ if (OLD_KEY && OLD_KEY !== KEYS.AUTH_STORAGE) {
   localStorage.removeItem(OLD_KEY);
 }
 
-function generateToken(user: User): string | null {
-  return btoa(JSON.stringify(user));
-}
-
 interface Auth extends AuthState {
   token: string | null;
   login: (user: User) => void;
@@ -28,12 +24,12 @@ export const useAuthStore = create<Auth>()(
       token: null,
       user: null,
       userData: [],
-      login: (user: User) => set({ user, token: generateToken(user) }),
+      login: (user: User) => set({ user, token: user.accessToken }),
       register: (user: User) =>
         set(state => ({
           user,
-          token: generateToken(user),
-          userData: user ? [...state.userData, user] : [...state.userData],
+          token: user.accessToken,
+          userData: [...state.userData, user],
         })),
       logout: () => set({ user: null, token: null }),
     }),

@@ -14,7 +14,7 @@ import { Search, Menu, LogOut } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/authStore';
 import { toast } from 'sonner';
-import type { User } from '@/commons/types';
+
 import LogoFull from '@/assets/logo-full.png';
 import { Link } from '@tanstack/react-router';
 
@@ -25,13 +25,18 @@ interface HeaderProps {
 
 function Header({ onSearch, searchQuery = '' }: HeaderProps) {
   const user = useAuthStore(state => state.user);
+  console.log('🚀 ~ user:', user);
   const logout = useAuthStore(state => state.logout);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
 
-  const isAuthenticated = useMemo(() => {
-    return !!user;
+  const { isAuthenticated, username, fullName } = useMemo(() => {
+    return {
+      isAuthenticated: !!user,
+      username: user?.username || 'user',
+      fullName: user ? `${user.firstName} ${user.lastName}` : 'No name',
+    };
   }, [user]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -47,9 +52,8 @@ function Header({ onSearch, searchQuery = '' }: HeaderProps) {
     }
   };
 
-  const getUserInitials = (user: User | null) => {
-    if (!user?.username) return 'U';
-    return user.username.charAt(0).toUpperCase();
+  const getUserInitials = () => {
+    return username.charAt(0).toUpperCase();
   };
 
   return (
@@ -94,10 +98,8 @@ function Header({ onSearch, searchQuery = '' }: HeaderProps) {
                       variant='ghost'
                       className='relative h-9 w-9 rounded-full hover:bg-muted'>
                       <Avatar className='h-9 w-9'>
-                        <AvatarImage src={user?.avatar} alt={user?.username} />
-                        <AvatarFallback className='font-medium'>
-                          {getUserInitials(user)}
-                        </AvatarFallback>
+                        <AvatarImage src={user?.image} alt={username} />
+                        <AvatarFallback className='font-medium'>{getUserInitials()}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
@@ -105,13 +107,11 @@ function Header({ onSearch, searchQuery = '' }: HeaderProps) {
                   <DropdownMenuContent align='end' className='w-64'>
                     <div className='flex items-center justify-start gap-3 p-3'>
                       <Avatar className='h-10 w-10'>
-                        <AvatarImage src={user?.avatar} alt={user?.username} />
-                        <AvatarFallback className='font-medium'>
-                          {getUserInitials(user)}
-                        </AvatarFallback>
+                        <AvatarImage src={user?.image} alt={username} />
+                        <AvatarFallback className='font-medium'>{getUserInitials()}</AvatarFallback>
                       </Avatar>
                       <div className='flex flex-col space-y-1 leading-none'>
-                        <p className='font-semibold'>{user?.username}</p>
+                        <p className='font-semibold capitalize'>{fullName}</p>
                         <p className='w-[180px] truncate text-sm text-muted-foreground'>
                           {user?.email}
                         </p>
@@ -173,11 +173,11 @@ function Header({ onSearch, searchQuery = '' }: HeaderProps) {
                     {/* User Info */}
                     <div className='flex items-center space-x-3 p-3 border rounded-lg'>
                       <Avatar className='h-10 w-10'>
-                        <AvatarImage src={user?.avatar} alt={user?.username} />
-                        <AvatarFallback>{getUserInitials(user)}</AvatarFallback>
+                        <AvatarImage src={user?.image} alt={username} />
+                        <AvatarFallback>{getUserInitials()}</AvatarFallback>
                       </Avatar>
                       <div className='flex-1 min-w-0'>
-                        <p className='font-medium truncate'>{user?.username}</p>
+                        <p className='font-medium truncate capitalize'>{fullName}</p>
                         <p className='text-sm text-muted-foreground truncate'>{user?.email}</p>
                       </div>
                     </div>

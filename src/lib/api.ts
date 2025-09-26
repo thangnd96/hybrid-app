@@ -3,7 +3,7 @@ import { KEYS } from '@/commons/key';
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: 'https://jsonplaceholder.typicode.com',
+  baseURL: 'https://dummyjson.com',
   timeout: 10000,
 });
 

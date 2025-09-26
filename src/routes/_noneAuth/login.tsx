@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Loader2, Mail, Lock } from 'lucide-react';
+import { Loader2, User, Lock } from 'lucide-react';
 import { authService } from '@/lib/auth';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from '@tanstack/react-router';
@@ -26,15 +26,15 @@ function LoginForm() {
   const login = useAuthStore(state => state.login);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleInputChange =
-    (type: 'email' | 'password') => (event: ChangeEvent<HTMLInputElement>) => {
+    (type: 'username' | 'password') => (event: ChangeEvent<HTMLInputElement>) => {
       const { value } = event.target;
       switch (type) {
-        case 'email':
-          setEmail(value);
+        case 'username':
+          setUsername(value);
           break;
         case 'password':
           setPassword(value);
@@ -49,7 +49,7 @@ function LoginForm() {
 
     setIsLoading(true);
     try {
-      const user = await authService.login({ email, password });
+      const user = await authService.login({ username, password });
 
       if (user) {
         login(user);
@@ -76,19 +76,19 @@ function LoginForm() {
         <form onSubmit={handleSubmit}>
           <CardContent className='space-y-4'>
             <div className='space-y-2'>
-              <Label htmlFor='email'>Email</Label>
+              <Label htmlFor='username'>Username</Label>
               <div className='relative'>
-                <Mail className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
+                <User className='absolute left-3 top-2.5 h-4 w-4 text-muted-foreground' />
                 <Input
                   required
-                  id='email'
-                  type='email'
-                  placeholder='Enter your email'
-                  value={email}
-                  onChange={handleInputChange('email')}
+                  id='username'
+                  // type='username'
+                  placeholder='Enter your username'
+                  value={username}
+                  onChange={handleInputChange('username')}
                   className='pl-9'
                   disabled={isLoading}
-                  autoComplete='email'
+                  autoComplete='username'
                 />
               </div>
             </div>
@@ -96,7 +96,7 @@ function LoginForm() {
             <div className='space-y-2'>
               <Label htmlFor='password'>Password</Label>
               <div className='relative'>
-                <Lock className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
+                <Lock className='absolute left-3 top-2.5 h-4 w-4 text-muted-foreground' />
                 <Input
                   required
                   id='password'
@@ -150,4 +150,5 @@ export const Route = createFileRoute('/_noneAuth/login')({
 
     return redirect;
   },
+  staleTime: Infinity,
 });

@@ -1,26 +1,12 @@
+import { useState } from 'react';
+
 import type { Post } from '@/commons/types';
 import { api } from '@/lib/api';
 import { createFileRoute } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/_view/')({
-  component: RouteComponent,
-  loader: async ({ location: { search = {} } }) => {
-    const { page = 1 } = search as { page?: number };
-    const limit = 10;
-
-    const { data, headers } = await api.get('/posts', {
-      params: { _page: page, _limit: limit },
-    });
-
-    const total = Number(headers['x-total-count'] ?? 100);
-    const totalPages = Math.ceil(total / limit);
-
-    return { posts: data, page, totalPages };
-  },
-  pendingComponent: () => <div>loading...</div>,
-});
-
-import { useState } from 'react';
+const LIMIT_PER_PAGE = 10;
+const PATH_FETCH_POSTS = '/posts';
+const PATH_FETCH_POSTS_SEARCH = '/posts/search';
 
 function RouteComponent() {
   const { posts: initPosts, page: initPage, totalPages } = Route.useLoaderData();
@@ -51,7 +37,8 @@ function RouteComponent() {
       <ul className='mb-4'>
         {posts.map(post => (
           <li key={post.id} className='border-b py-2'>
-            {post.title}
+            <div>{post.title}</div>
+            <div>{post.body}</div>
           </li>
         ))}
       </ul>
@@ -67,3 +54,36 @@ function RouteComponent() {
     </div>
   );
 }
+
+type PostSortOrderOptions = 'asc' | 'desc';
+type PostSortByOptions = keyof Post;
+type PostFilters = {
+  q?: string; // search title or body
+  sortBy?: PostSortByOptions;
+  order?: PostSortOrderOptions;
+};
+
+export const Route = createFileRoute('/_view/')({
+  component: RouteComponent,
+  validateSearch: (search: Record<string, unknown>): PostFilters => {
+    return {
+      q: (search.q as string) || undefined,
+      sortBy: (search.sortBy as PostSortByOptions) || undefined,
+      order: (search.order as PostSortOrderOptions) || undefined,
+    };
+  },
+  loader: async ({ location: { search } }) => {
+    const { sortBy, q, order } = search as PostFilters;
+
+    const { data } = await api.get(q ? PATH_FETCH_POSTS_SEARCH : PATH_FETCH_POSTS, {
+      params: { skip: 0, limit: LIMIT_PER_PAGE, sortBy, order, q },
+    });
+    console.log('🚀 ~ data:', data);
+
+    const total = data?.total || LIMIT_PER_PAGE;
+    const totalPages = Math.ceil(total / LIMIT_PER_PAGE);
+
+    return { posts: data?.posts || [], filter: search, totalPages };
+  },
+  pendingComponent: () => <div>loading...</div>,
+});
