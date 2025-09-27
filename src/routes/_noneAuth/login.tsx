@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
 // Login form component with validation
 import { useState, type ChangeEvent } from 'react';
@@ -110,6 +110,16 @@ function LoginForm() {
                 />
               </div>
             </div>
+
+            <div className='text-sm text-muted-foreground bg-muted p-3 rounded-lg'>
+              <p className='font-medium mb-1'>Demo Credentials:</p>
+              <p className='flex items-center'>
+                <span>Username: emilys</span> <span className='mx-4'>|</span>{' '}
+                <span>Password: emilyspass</span>
+              </p>
+              <p>Or</p>
+              <p>Choose user at: https://dummyjson.com/users</p>
+            </div>
           </CardContent>
 
           <CardFooter className='flex flex-col space-y-4'>
@@ -124,7 +134,7 @@ function LoginForm() {
               )}
             </Button>
 
-            <div className='text-center text-sm text-muted-foreground'>
+            {/* <div className='text-center text-sm text-muted-foreground'>
               Don't have an account?{' '}
               <Link to='/sign-up' preload={false}>
                 <Button
@@ -135,7 +145,7 @@ function LoginForm() {
                   Sign up
                 </Button>
               </Link>
-            </div>
+            </div> */}
           </CardFooter>
         </form>
       </Card>

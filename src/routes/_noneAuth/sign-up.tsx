@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { useState, type ChangeEvent } from 'react';
+import { useLayoutEffect, useState, type ChangeEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -102,6 +102,11 @@ function RouteComponent() {
 
     handleRegister({ email, password, username, firstName, lastName });
   };
+
+  useLayoutEffect(() => {
+    router.navigate({ to: '/login' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <PageTransition className='max-w-full w-full px-4'>

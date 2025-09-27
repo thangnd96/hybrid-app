@@ -134,9 +134,9 @@ function Header({ onSearch, searchQuery = '' }: HeaderProps) {
                     Sign In
                   </Button>
                 </Link>
-                <Link to='/sign-up' preload={false}>
+                {/* <Link to='/sign-up' preload={false}>
                   <Button size='sm'>Sign Up</Button>
-                </Link>
+                </Link> */}
               </div>
             )}
           </div>
@@ -196,9 +196,11 @@ function Header({ onSearch, searchQuery = '' }: HeaderProps) {
                 </SheetContent>
               </Sheet>
             ) : (
-              <Button variant='ghost' size='sm'>
-                <Menu className='h-5 w-5' />
-              </Button>
+              <Link to='/login' preload={false}>
+                <Button variant='ghost' size='sm'>
+                  Sign In
+                </Button>
+              </Link>
             )}
           </div>
         </div>
