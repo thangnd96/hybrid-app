@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 
 import type { Post, PostFilters, PostSortByOptions, PostSortOrderOptions } from '@/commons/types';
 import { api } from '@/lib/api';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import PostCard from '@/components/PostCard';
 
 const LIMIT_PER_PAGE = 10;
 const PATH_FETCH_POSTS = '/posts';
@@ -12,12 +13,11 @@ function RouteComponent() {
   const { posts: initPosts, filter, totalPages } = Route.useLoaderData();
   const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
-
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLoadMore = async () => {
-    if (loading || page >= totalPages) return;
-    setLoading(true);
+    if (isLoading || page >= totalPages) return;
+    setIsLoading(true);
     try {
       const { data } = await api.get('/posts', {
         params: { skip: page, limit: LIMIT_PER_PAGE, ...filter },
@@ -27,7 +27,7 @@ function RouteComponent() {
     } catch {
       // handle error (optional)
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -37,24 +37,45 @@ function RouteComponent() {
   }, [initPosts]);
 
   return (
-    <div className='p-4'>
-      <ul className='mb-4'>
+    <div className='container flex flex-col md:flex-row items-start justify-center gap-x-6 px-4 xl:gap-x-12 pt-4'>
+      <div className='w-full md:w-[240px] xl:w-[320px] sticky top-[81px] z-50 pb-4'>
+        <div className='w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 rounded-xl'>
+          filter
+        </div>
+      </div>
+
+      <div className='flex-1'>
         {posts.map(post => (
-          <li key={post.id} className='border-b py-2'>
-            <div>{post.title}</div>
-            <div>{post.body}</div>
-          </li>
+          <Link
+            to='/$postId'
+            params={{ postId: post.id }}
+            key={post.id}
+            className='mb-4 last:mb-0 block'>
+            <PostCard post={post} keyword={filter.q} />
+          </Link>
         ))}
-      </ul>
-      {page < totalPages && (
-        <button
-          className='bg-primary text-white px-4 py-2 rounded disabled:opacity-50'
-          onClick={handleLoadMore}
-          disabled={loading}>
-          {loading ? 'Loading...' : 'Load More'}
-        </button>
-      )}
-      {page >= totalPages && <div className='text-gray-500 mt-2'>No more posts.</div>}
+
+        {isLoading &&
+          Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
+            <PostCard key={index} isSkeleton className='mb-4 last:mb-0' />
+          ))}
+
+        {page < totalPages && (
+          <button
+            className='bg-primary text-white px-4 py-2 rounded disabled:opacity-50'
+            onClick={handleLoadMore}
+            disabled={isLoading}>
+            {isLoading ? 'Loading...' : 'Load More'}
+          </button>
+        )}
+        {page >= totalPages && <div className='text-gray-500 mt-2'>No more posts.</div>}
+      </div>
+
+      <div className='w-[240px] xl:w-[320px] sticky top-[81px] z-50 hidden lg:block'>
+        <div className='bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 rounded-xl'>
+          trending
+        </div>
+      </div>
     </div>
   );
 }
