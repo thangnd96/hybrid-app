@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import type { Post, PostFilters, PostSortByOptions, PostSortOrderOptions } from '@/commons/types';
 import { api } from '@/lib/api';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import PostCard from '@/components/PostCard';
+import { PostCard, PostSkeletonCard } from '@/components/PostCard';
+import Trending from '../-components/Trending';
 
 const LIMIT_PER_PAGE = 10;
 const PATH_FETCH_POSTS = '/posts';
@@ -37,8 +38,8 @@ function RouteComponent() {
   }, [initPosts]);
 
   return (
-    <div className='container flex flex-col md:flex-row items-start justify-center gap-x-6 px-4 xl:gap-x-12 pt-4'>
-      <div className='w-full md:w-[240px] xl:w-[320px] sticky top-[81px] z-50 pb-4'>
+    <div className='flex flex-col md:flex-row items-start justify-center gap-x-6 xl:gap-x-12 pt-4'>
+      <div className='w-full md:w-1/3 lg:w-1/4 sticky top-[81px] z-50 pb-4'>
         <div className='w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 rounded-xl'>
           filter
         </div>
@@ -57,7 +58,7 @@ function RouteComponent() {
 
         {isLoading &&
           Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
-            <PostCard key={index} isSkeleton className='mb-4 last:mb-0' />
+            <PostSkeletonCard key={index} className='mb-4 last:mb-0' />
           ))}
 
         {page < totalPages && (
@@ -71,11 +72,7 @@ function RouteComponent() {
         {page >= totalPages && <div className='text-gray-500 mt-2'>No more posts.</div>}
       </div>
 
-      <div className='w-[240px] xl:w-[320px] sticky top-[81px] z-50 hidden lg:block'>
-        <div className='bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 rounded-xl'>
-          trending
-        </div>
-      </div>
+      <Trending className='w-1/4 sticky top-[81px] z-50 hidden lg:block' />
     </div>
   );
 }

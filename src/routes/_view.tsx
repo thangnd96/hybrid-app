@@ -10,7 +10,11 @@ const NoneAuthComponent: FunctionComponent = () => {
   return (
     <LayoutWrapper>
       <Header filter={filter} />
-      <Outlet />
+      <div className='px-4'>
+        <div className='container px-0'>
+          <Outlet />
+        </div>
+      </div>
     </LayoutWrapper>
   );
 };
