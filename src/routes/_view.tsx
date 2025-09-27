@@ -6,9 +6,10 @@ import Header from '@/components/layout/Header';
 export const noneAuthFallback = '/';
 
 const NoneAuthComponent: FunctionComponent = () => {
+  const filter = Route.useLoaderData();
   return (
     <LayoutWrapper>
-      <Header />
+      <Header filter={filter} />
       <Outlet />
     </LayoutWrapper>
   );
@@ -16,4 +17,7 @@ const NoneAuthComponent: FunctionComponent = () => {
 
 export const Route = createFileRoute('/_view')({
   component: NoneAuthComponent,
+  loader: async ({ location: { search } }) => {
+    return search;
+  },
 });

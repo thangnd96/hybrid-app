@@ -14,6 +14,15 @@ export interface Reactions {
   dislikes: number;
 }
 
+export type PostSortOrderOptions = 'asc' | 'desc';
+export type PostSortByOptions = keyof Post;
+
+export type PostFilters = {
+  q?: string; // search title or body
+  sortBy?: PostSortByOptions;
+  order?: PostSortOrderOptions;
+};
+
 // Authentication
 export type RegisterBody = {
   email: string;

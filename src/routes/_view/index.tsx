@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import type { Post } from '@/commons/types';
+import type { Post, PostFilters, PostSortByOptions, PostSortOrderOptions } from '@/commons/types';
 import { api } from '@/lib/api';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -9,9 +9,9 @@ const PATH_FETCH_POSTS = '/posts';
 const PATH_FETCH_POSTS_SEARCH = '/posts/search';
 
 function RouteComponent() {
-  const { posts: initPosts, page: initPage, totalPages } = Route.useLoaderData();
-  const [posts, setPosts] = useState<Post[]>(initPosts);
-  const [page, setPage] = useState(initPage);
+  const { posts: initPosts, filter, totalPages } = Route.useLoaderData();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [page, setPage] = useState(1);
 
   const [loading, setLoading] = useState(false);
 
@@ -19,18 +19,22 @@ function RouteComponent() {
     if (loading || page >= totalPages) return;
     setLoading(true);
     try {
-      const limit = 10;
       const { data } = await api.get('/posts', {
-        params: { _page: page + 1, _limit: limit },
+        params: { skip: page, limit: LIMIT_PER_PAGE, ...filter },
       });
-      setPosts((prev: Post[]) => [...prev, ...data]);
-      setPage((prev: number) => prev + 1);
+      setPosts([...posts, ...(data?.posts || [])]);
+      setPage(page + 1);
     } catch {
       // handle error (optional)
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setPosts(initPosts);
+    setPage(1);
+  }, [initPosts]);
 
   return (
     <div className='p-4'>
@@ -55,14 +59,6 @@ function RouteComponent() {
   );
 }
 
-type PostSortOrderOptions = 'asc' | 'desc';
-type PostSortByOptions = keyof Post;
-type PostFilters = {
-  q?: string; // search title or body
-  sortBy?: PostSortByOptions;
-  order?: PostSortOrderOptions;
-};
-
 export const Route = createFileRoute('/_view/')({
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>): PostFilters => {
@@ -73,12 +69,11 @@ export const Route = createFileRoute('/_view/')({
     };
   },
   loader: async ({ location: { search } }) => {
-    const { sortBy, q, order } = search as PostFilters;
+    const { q, ...filter } = search as PostFilters;
 
     const { data } = await api.get(q ? PATH_FETCH_POSTS_SEARCH : PATH_FETCH_POSTS, {
-      params: { skip: 0, limit: LIMIT_PER_PAGE, sortBy, order, q },
+      params: { skip: 0, limit: LIMIT_PER_PAGE, q, ...filter },
     });
-    console.log('🚀 ~ data:', data);
 
     const total = data?.total || LIMIT_PER_PAGE;
     const totalPages = Math.ceil(total / LIMIT_PER_PAGE);
