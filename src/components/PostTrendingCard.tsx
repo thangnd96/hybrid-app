@@ -46,7 +46,7 @@ export function PostTrendingCard({ post, range }: PostTrendingCardProps) {
 
           <div className='flex-1 min-w-0'>
             {/* Title with gradient hover */}
-            <h4 className='text-sm font-semibold text-gray-800 group-hover:bg-gradient-to-r group-hover:from-pink-600 group-hover:to-purple-600 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-200 line-clamp-2 mb-3'>
+            <h4 className='text-sm font-bold text-gray-800 group-hover:bg-gradient-to-r group-hover:from-pink-600 group-hover:to-purple-600 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-200 line-clamp-2 mb-3'>
               {post.title}
             </h4>
 
@@ -58,12 +58,12 @@ export function PostTrendingCard({ post, range }: PostTrendingCardProps) {
               </div>
 
               <div className='flex items-center text-sm text-primary'>
-                <ThumbsUp className='mr-1 h-4 w-4' />
+                <ThumbsUp className='mr-1 h-4 w-4 text-blue-500' />
                 <span>{post.reactions?.likes}</span>
               </div>
 
               <div className='flex items-center text-sm text-primary'>
-                <ThumbsDown className='mr-1 h-4 w-4' />
+                <ThumbsDown className='mr-1 h-4 w-4 text-red-500' />
                 <span>{post.reactions?.dislikes}</span>
               </div>
             </div>

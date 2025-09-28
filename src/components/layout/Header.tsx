@@ -16,7 +16,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { toast } from 'sonner';
 
 import LogoFull from '@/assets/logo-full.png';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import type { PostFilters } from '@/commons/types';
 
 interface HeaderProps {
@@ -24,6 +24,7 @@ interface HeaderProps {
 }
 
 function AuthenticateHeader({ children }: PropsWithChildren) {
+  const router = useRouter();
   const user = useAuthStore(state => state.user);
   const logout = useAuthStore(state => state.logout);
 
@@ -40,6 +41,7 @@ function AuthenticateHeader({ children }: PropsWithChildren) {
   const handleLogout = async () => {
     try {
       logout();
+      await router.invalidate();
     } catch {
       toast.error('Failed to log out. Please try again.');
     }

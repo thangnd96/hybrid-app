@@ -1,10 +1,11 @@
-import { cn } from '@/lib/utils';
+import { cn, getRainbowColorNameById } from '@/lib/utils';
 import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 import type { Post } from '@/commons/types';
 import { Badge } from './ui/badge';
 import { useMemo } from 'react';
 import { Eye, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { ImageWithFallback } from './ImageWithFallback';
 
 interface PostCardProps {
   className?: string;
@@ -29,12 +30,22 @@ export function PostCard({ post, keyword, className }: PostCardProps) {
   return (
     <Card
       className={cn(
-        'hover:shadow-lg transition-all duration-200 animate-in fade-in-0 slide-in-from-bottom-4',
+        'hover:shadow-lg transition-all duration-200 animate-in fade-in-0 slide-in-from-bottom-4 pt-0',
         className
       )}>
+      <div className='aspect-video overflow-hidden rounded-t-lg'>
+        <ImageWithFallback
+          src={`https://dummyjson.com/image/1920x1080/${getRainbowColorNameById(
+            post.id
+          )}?fontFamily=pacifico&text=${post.title.split(' ')[0]}`}
+          alt={post.title}
+          className='w-full h-full object-cover hover:scale-105 transition-transform duration-200'
+        />
+      </div>
+
       <CardHeader className='pb-0'>
         <h3
-          className='line-clamp-2'
+          className='line-clamp-2 font-bold'
           dangerouslySetInnerHTML={{ __html: highlightMatchSearch(post.title) }}
         />
       </CardHeader>
@@ -66,18 +77,18 @@ export function PostCard({ post, keyword, className }: PostCardProps) {
         <div className='flex items-center justify-between w-full'>
           {/* Comments Count */}
           <div className='flex items-center text-sm text-muted-foreground'>
-            <Eye className='mr-1 h-4 w-4' />
+            <Eye className='mr-1 h-4 w-4 text-black' />
             <span>{post.views} Views</span>
           </div>
 
           <div className='flex items-center space-x-3'>
             <div className='flex items-center text-sm text-muted-foreground'>
-              <ThumbsUp className='mr-1 h-4 w-4' />
+              <ThumbsUp className='mr-1 h-4 w-4 text-blue-500' />
               <span>{post.reactions?.likes} Likes</span>
             </div>
 
             <div className='flex items-center text-sm text-muted-foreground'>
-              <ThumbsDown className='mr-1 h-4 w-4' />
+              <ThumbsDown className='mr-1 h-4 w-4 text-red-500' />
               <span>{post.reactions?.dislikes} Dislikes</span>
             </div>
           </div>

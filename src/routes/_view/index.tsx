@@ -92,8 +92,8 @@ export const Route = createFileRoute('/_view/')({
       params: { skip: 0, limit: LIMIT_PER_PAGE, q, ...filter },
     });
 
-    const total = data?.total || LIMIT_PER_PAGE;
-    const totalPages = Math.ceil(total / LIMIT_PER_PAGE);
+    const total = data?.total || 0;
+    const totalPages = total ? Math.ceil(total / LIMIT_PER_PAGE) : 1;
 
     return { posts: data?.posts || [], filter: search, totalPages };
   },

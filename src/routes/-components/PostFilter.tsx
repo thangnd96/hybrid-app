@@ -17,7 +17,7 @@ function PostFilter({ className, filter }: PostFilterProps) {
         className
       )}>
       <div className='flex items-center justify-between mb-2 md:mb-5'>
-        <h2 className='font-medium text-gray-900 flex items-center gap-2'>
+        <h2 className='font-bold text-gray-900 flex items-center gap-2'>
           <Filter className='h-4 w-4' />
           Filter
         </h2>

@@ -1,4 +1,10 @@
-import { createFileRoute, Link, Outlet, redirect } from '@tanstack/react-router';
+import {
+  createFileRoute, Outlet,
+  redirect,
+  useCanGoBack,
+  useNavigate,
+  useRouter
+} from '@tanstack/react-router';
 import { z } from 'zod';
 import type { FunctionComponent } from 'react';
 import { useAuthStore } from '@/stores/authStore';
@@ -10,6 +16,21 @@ import { Button } from '@/components/ui/button';
 export const noneAuthFallback = '/';
 
 const NoneAuthComponent: FunctionComponent = () => {
+  const router = useRouter();
+  const navigate = useNavigate();
+  const canGoBack = useCanGoBack();
+
+  const handleBack = () => {
+    if (canGoBack) {
+      router.history.back();
+      return;
+    }
+
+    navigate({
+      to: '/',
+    });
+  };
+
   return (
     <LayoutWrapper>
       <div className='min-h-screen flex flex-col items-center relative py-8'>
@@ -18,11 +39,9 @@ const NoneAuthComponent: FunctionComponent = () => {
         </div>
 
         <div className='mb-4 w-full sm:max-w-md mx-auto px-4'>
-          <Link to='/' preload={false}>
-            <Button variant='ghost' size='sm'>
-              ← Back to Home
-            </Button>
-          </Link>
+          <Button variant='ghost' size='sm' onClick={handleBack}>
+            ← Back to Home
+          </Button>
         </div>
         <Outlet />
 

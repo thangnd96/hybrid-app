@@ -23,6 +23,19 @@ export type PostFilters = {
   order?: PostSortOrderOptions;
 };
 
+// Comment
+export interface Comment {
+  id: number;
+  postId: number;
+  body: string;
+  likes: number;
+  user: {
+    id: number;
+    username: string;
+    fullName: string;
+  };
+}
+
 // Authentication
 export type RegisterBody = {
   email: string;
@@ -41,7 +54,7 @@ export interface User {
   firstName: string;
   lastName: string;
   image: string;
-  password?: string
+  password?: string;
 }
 
 export interface AuthState {
