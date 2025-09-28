@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PostCard, PostSkeletonCard } from '@/components/PostCard';
 import Trending from '../-components/Trending';
+import PostFilter from '../-components/PostFilter';
 
 const LIMIT_PER_PAGE = 10;
 const PATH_FETCH_POSTS = '/posts';
@@ -39,10 +40,8 @@ function RouteComponent() {
 
   return (
     <div className='flex flex-col md:flex-row items-start justify-center gap-x-6 xl:gap-x-12 pt-4'>
-      <div className='w-full md:w-1/3 lg:w-1/4 sticky top-[81px] z-50 pb-4'>
-        <div className='w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 rounded-xl'>
-          filter
-        </div>
+      <div className='w-full md:w-1/3 lg:w-1/4 sticky top-[65px] md:top-[81px] z-50 pb-4'>
+        <PostFilter filter={filter} />
       </div>
 
       <div className='flex-1'>
