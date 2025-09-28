@@ -3,7 +3,7 @@ import { Skeleton } from './ui/skeleton';
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 import type { Post } from '@/commons/types';
 import { Badge } from './ui/badge';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { Eye, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
 
@@ -13,7 +13,7 @@ interface PostCardProps {
   post: Post;
 }
 
-export function PostCard({ post, keyword, className }: PostCardProps) {
+function PostCardComponent({ post, keyword, className }: PostCardProps) {
   const extraTagsCount = useMemo(() => {
     if (!post.tags) return 0;
 
@@ -40,6 +40,8 @@ export function PostCard({ post, keyword, className }: PostCardProps) {
           )}?fontFamily=pacifico&text=${post.title.split(' ')[0]}`}
           alt={post.title}
           className='w-full h-full object-cover hover:scale-105 transition-transform duration-200'
+          loading='lazy'
+          decoding='async'
         />
       </div>
 
@@ -105,6 +107,8 @@ export function PostCard({ post, keyword, className }: PostCardProps) {
   );
 }
 
+export const PostCard = memo(PostCardComponent);
+
 export function PostSkeletonCard({ className }: { className?: string }) {
   return (
     <Card className={cn('animate-in fade-in-0 slide-in-from-bottom-4', className)}>
@@ -118,8 +122,8 @@ export function PostSkeletonCard({ className }: { className?: string }) {
 
         {/* Tags */}
         <div className='flex flex-wrap gap-1 mt-3'>
-          {Array.from({ length: 2 }).map(() => (
-            <Skeleton className='h-6 w-16' />
+          {Array.from({ length: 2 }).map((_item, index) => (
+            <Skeleton key={index} className='h-6 w-16' />
           ))}
         </div>
       </CardContent>

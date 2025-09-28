@@ -35,6 +35,10 @@ function PostComment({ postId, onAddComment }: PostCommentProps) {
     setNewComment(event.target.value);
   };
 
+  const clearComment = () => {
+    setNewComment('');
+  };
+
   const handleSubmitComment = async (event: FormEvent) => {
     event.preventDefault();
 
@@ -60,39 +64,62 @@ function PostComment({ postId, onAddComment }: PostCommentProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className='flex items-center space-x-3'>
-          <Avatar className='h-8 w-8'>
-            <AvatarImage src={user?.image} alt={username} />
-            <AvatarFallback>{user ? getUserInitials(username) : 'U'}</AvatarFallback>
-          </Avatar>
-          <span className='font-medium'>{fullName}</span>
+    <Card className='border border-muted/40 shadow-sm hover:shadow-md transition-shadow'>
+      <CardHeader className='pb-2'>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center space-x-3'>
+            <Avatar className='h-9 w-9'>
+              <AvatarImage src={user?.image} alt={username} />
+              <AvatarFallback>{user ? getUserInitials(username) : 'U'}</AvatarFallback>
+            </Avatar>
+            <div className='leading-tight'>
+              <div className='font-semibold'>{fullName}</div>
+              <div className='text-xs text-muted-foreground'>Share your thoughts</div>
+            </div>
+          </div>
+          <div className='hidden md:block text-xs text-muted-foreground'>
+            Be kind and follow the community rules
+          </div>
         </div>
       </CardHeader>
-      <CardContent className='pb-0'>
-        <form onSubmit={handleSubmitComment} className='space-y-4'>
+      <CardContent className='pt-0'>
+        <form onSubmit={handleSubmitComment} className='space-y-3'>
           <Textarea
-            placeholder='Share your thoughts...'
+            placeholder='Write a helpful, respectful comment...'
             value={newComment}
             onChange={handleCommentChange}
-            className='min-h-[100px] resize-none'
+            className='min-h-[110px] resize-none focus-visible:ring-2'
             disabled={isSubmitting}
           />
-          <div className='flex justify-end'>
-            <Button type='submit' disabled={!newComment.trim() || isSubmitting} size='sm'>
-              {isSubmitting ? (
-                <>
-                  <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
-                  Posting...
-                </>
-              ) : (
-                <>
-                  <Send className='mr-2 h-4 w-4' />
-                  Post Comment
-                </>
-              )}
-            </Button>
+          <div className='flex items-center justify-between text-xs text-muted-foreground'>
+            <span>{newComment.trim().length}/1000</span>
+            <div className='flex items-center gap-2'>
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                onClick={clearComment}
+                disabled={!newComment || isSubmitting}>
+                Clear
+              </Button>
+              <Button
+                type='submit'
+                disabled={!newComment.trim() || isSubmitting}
+                size='sm'
+                className='bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white hover:opacity-90'>
+                {isSubmitting ? (
+                  <>
+                    <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent' />
+                    Posting...
+                  </>
+                ) : (
+                  <>
+                    <Send className='mr-2 h-4 w-4' />
+                    Post Comment
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </form>
       </CardContent>

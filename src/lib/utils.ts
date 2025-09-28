@@ -21,7 +21,8 @@ export function getRainbowColorNameById(id: number) {
   ];
 
   const numColors = RAINBOW_COLOR_NAMES.length;
-  const colorIndex = id % numColors;
+  // Handle negative numbers properly
+  const colorIndex = ((id % numColors) + numColors) % numColors;
   
   return RAINBOW_COLOR_NAMES[colorIndex];
 }

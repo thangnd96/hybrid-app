@@ -8,7 +8,7 @@ import { ImageWithFallback } from '@/components/ImageWithFallback';
 import { getRainbowColorNameById } from '@/lib/utils';
 import PostCommentList from '@/routes/-components/PostCommentList';
 
-const LIMIT_PER_PAGE = 10;
+const LIMIT_PER_PAGE = 1;
 
 function RouteComponent() {
   const router = useRouter();
@@ -142,5 +142,48 @@ export const Route = createFileRoute('/_view/_authenticated/$postId')({
       totalComments: total,
     };
   },
-  pendingComponent: () => <div>loading...</div>,
+  pendingComponent: () => (
+    <div className='pt-4 pb-5 md:max-w-3/5 md:mx-auto'>
+      <div className='mb-6 h-9 w-32 bg-gray-200 rounded animate-pulse' />
+      <article className='space-y-6'>
+        <div className='aspect-video overflow-hidden rounded-lg bg-gray-200 animate-pulse' />
+
+        <div className='space-y-4'>
+          <div className='flex items-center space-x-4'>
+            <div className='h-12 w-12 rounded-full bg-gray-200 animate-pulse' />
+            <div className='flex-1'>
+              <div className='h-4 w-40 bg-gray-200 rounded animate-pulse' />
+            </div>
+          </div>
+          <div className='h-8 w-3/4 bg-gray-200 rounded animate-pulse' />
+          <div className='flex flex-wrap gap-2'>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className='h-6 w-16 bg-gray-200 rounded animate-pulse' />
+            ))}
+          </div>
+        </div>
+
+        <div className='space-y-2'>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className='h-4 w-full bg-gray-200 rounded animate-pulse' />
+          ))}
+        </div>
+
+        <div className='flex items-center justify-between w-full'>
+          <div className='h-5 w-24 bg-gray-200 rounded animate-pulse' />
+          <div className='flex items-center space-x-3'>
+            <div className='h-5 w-20 bg-gray-200 rounded animate-pulse' />
+            <div className='h-5 w-24 bg-gray-200 rounded animate-pulse' />
+          </div>
+        </div>
+      </article>
+
+      <div className='mt-8 space-y-3'>
+        <div className='h-6 w-32 bg-gray-200 rounded animate-pulse' />
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className='h-16 w-full bg-gray-200 rounded animate-pulse' />
+        ))}
+      </div>
+    </div>
+  ),
 });

@@ -17,7 +17,7 @@ export function LayoutWrapper({ children, className }: LayoutWrapperProps) {
         duration: 0.2,
         ease: 'easeInOut',
       }}
-      className={cn('min-h-screen', className)}>
+      className={cn('min-h-screen text-foreground [--radius:12px]', className)}>
       {children}
     </motion.div>
   );

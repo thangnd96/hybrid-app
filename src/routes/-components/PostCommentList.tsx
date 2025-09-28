@@ -6,6 +6,7 @@ import { Heart, MessageCircle } from 'lucide-react';
 import { memo, useCallback, useEffect, useState } from 'react';
 import type { Comment } from '@/commons/types';
 import PostComment from './PostComment';
+import { Button } from '@/components/ui/button';
 
 interface PostCommentListProps {
   postId: number;
@@ -63,13 +64,17 @@ function PostCommentList({
     <>
       {/* Comments Section */}
       <section className='mt-12 space-y-6'>
-        <h2 className='text-2xl font-bold'>Comments ({totalComments})</h2>
+        <div className='flex items-center justify-between'>
+          <h2 className='text-2xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent'>
+            Comments ({totalComments})
+          </h2>
+          <div className='text-sm text-muted-foreground hidden md:block'>Newest first</div>
+        </div>
 
         <PostComment postId={postId} onAddComment={addComment} />
 
         {/* Comments List */}
         <div className='space-y-4 flex flex-col items-center'>
-
           {!commentsLoading && comments.length === 0 && (
             <Card className='p-0 w-full'>
               <CardContent className='p-8 text-center'>
@@ -82,11 +87,13 @@ function PostCommentList({
             </Card>
           )}
 
-          {comments.map((comment: Comment) => (
-            <Card key={comment.id} className='p-0 w-full'>
+          {comments.map((comment: Comment, index) => (
+            <Card
+              key={`${comment.id}-${page}-${index}`}
+              className='p-0 w-full border border-muted/40 hover:shadow-sm transition-shadow'>
               <CardContent className='p-4'>
                 <div className='flex space-x-3'>
-                  <Avatar className='h-8 w-8'>
+                  <Avatar className='h-9 w-9'>
                     <AvatarImage
                       src={`https://dummyjson.com/icon/${comment.user.username}/128`}
                       alt={comment.user.username}
@@ -94,14 +101,25 @@ function PostCommentList({
                     <AvatarFallback>{getUserInitials(comment.user.username)}</AvatarFallback>
                   </Avatar>
                   <div className='flex-1 space-y-2'>
-                    <div className='flex items-center space-x-2'>
-                      <span className='font-medium'>{comment.user.fullName}</span>
+                    <div className='flex items-center justify-between'>
+                      <div className='flex items-center gap-2'>
+                        <span className='font-semibold'>{comment.user.fullName}</span>
+                        <span className='text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground'>
+                          @{comment.user.username}
+                        </span>
+                      </div>
                     </div>
-                    <p className='text-sm leading-relaxed whitespace-pre-wrap'>{comment.body}</p>
+                    <p className='text-[15px] leading-relaxed whitespace-pre-wrap'>
+                      {comment.body}
+                    </p>
 
-                    <div className='flex items-center text-sm text-muted-foreground mt-4'>
-                      <Heart className='mr-1 h-4 w-4 text-red-500' />
-                      <span>{comment.likes || 0}</span>
+                    <div className='flex items-center gap-4 text-sm text-muted-foreground mt-3'>
+                      <button className='inline-flex items-center gap-1 hover:text-foreground'>
+                        <Heart className='h-4 w-4 text-red-500' />
+                        <span>{comment.likes || 0}</span>
+                      </button>
+                      <button className='hover:text-foreground'>Reply</button>
+                      <button className='hover:text-foreground'>Share</button>
                     </div>
                   </div>
                 </div>
@@ -129,12 +147,12 @@ function PostCommentList({
           )}
 
           {!commentsLoading && page < totalCommentPages && (
-            <button
-              className='bg-primary text-white px-4 py-2 rounded disabled:opacity-50'
+            <Button
+              disabled={commentsLoading}
               onClick={handleLoadMore}
-              disabled={commentsLoading}>
+              className='bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white hover:opacity-90'>
               Load More
-            </button>
+            </Button>
           )}
         </div>
       </section>

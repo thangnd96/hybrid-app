@@ -37,9 +37,24 @@ export const useAuthStore = create<Auth>()(
       name: KEYS.AUTH_STORAGE,
       storage: createJSONStorage(() => localStorage),
 
-      partialize: (state: Auth) => {
-        return state;
-      },
+      // Persist only minimal sensitive info to reduce storage footprint
+      partialize: (state: Auth) => ({
+        token: state.token,
+        user: state.user
+          ? {
+              id: state.user.id,
+              username: state.user.username,
+              email: state.user.email,
+              firstName: state.user.firstName,
+              lastName: state.user.lastName,
+              image: state.user.image,
+              accessToken: state.user.accessToken,
+              refreshToken: state.user.refreshToken,
+            }
+          : null,
+        // do not persist userData list to avoid large payloads
+        userData: [],
+      }),
 
       // Optional: Migration handling for type changes
       migrate: (persistedState, version) => {

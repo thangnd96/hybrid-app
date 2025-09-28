@@ -64,18 +64,20 @@ function Trending({ className }: TrendingProps) {
             <PostTrendingSkeletonCard key={index} />
           ))}
         </div>
-      ) : (
+      ) : trendingPosts.length ? (
         <div className='space-y-3'>
           {trendingPosts.map((post, index) => (
             <Link
               to='/$postId'
               params={{ postId: post.id }}
               key={post.id}
-              className='mb-4 last:mb-0 block'>
+              className='mb-4 last:mb-0 block hover:translate-x-0.5 transition-transform'>
               <PostTrendingCard post={post} range={index} />
             </Link>
           ))}
         </div>
+      ) : (
+        <div className='text-center text-muted-foreground text-sm'>No trending posts right now.</div>
       )}
     </div>
   );

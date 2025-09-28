@@ -116,8 +116,8 @@ export function PostTrendingSkeletonCard() {
 
             {/* Category Badge with gradient */}
             <div className='flex justify-end gap-3'>
-              {Array.from({ length: 2 }).map(() => (
-                <Skeleton className='h-6 w-16' />
+              {Array.from({ length: 2 }).map((_item, index) => (
+                <Skeleton key={index} className='h-6 w-16' />
               ))}
             </div>
           </div>

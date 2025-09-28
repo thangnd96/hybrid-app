@@ -9,6 +9,7 @@ const router = createRouter({
   defaultPendingMs: 0,
   defaultPreload: 'intent',
   history: browserHistory,
+  scrollRestoration: true,
 });
 
 function App() {

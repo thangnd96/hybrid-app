@@ -6,6 +6,9 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { PostCard, PostSkeletonCard } from '@/components/PostCard';
 import Trending from '../-components/Trending';
 import PostFilter from '../-components/PostFilter';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Newspaper } from 'lucide-react';
 
 const LIMIT_PER_PAGE = 10;
 const PATH_FETCH_POSTS = '/posts';
@@ -39,36 +42,44 @@ function RouteComponent() {
   }, [initPosts]);
 
   return (
-    <div className='flex flex-col md:flex-row items-start justify-center gap-x-6 xl:gap-x-12 pt-4'>
+    <div className='flex flex-col md:flex-row items-start justify-center gap-x-6 xl:gap-x-12 pt-4 pb-5'>
       <div className='w-full md:w-1/3 lg:w-1/4 sticky top-[65px] md:top-[81px] z-50 pb-4'>
         <PostFilter filter={filter} />
       </div>
 
-      <div className='flex-1'>
-        {posts.map(post => (
-          <Link
-            to='/$postId'
-            params={{ postId: post.id }}
-            key={post.id}
-            className='mb-4 last:mb-0 block'>
-            <PostCard post={post} keyword={filter.q} />
-          </Link>
-        ))}
-
-        {isLoading &&
-          Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
-            <PostSkeletonCard key={index} className='mb-4 last:mb-0' />
-          ))}
-
-        {page < totalPages && (
-          <button
-            className='bg-primary text-white px-4 py-2 rounded disabled:opacity-50'
-            onClick={handleLoadMore}
-            disabled={isLoading}>
-            {isLoading ? 'Loading...' : 'Load More'}
-          </button>
+      <div className='flex-1 w-full md:w-auto'>
+        {posts.length > 0 ? (
+          posts.map((post, index) => (
+            <Link
+              to='/$postId'
+              params={{ postId: post.id }}
+              key={`${post.id}-${page}-${index}`}
+              className='mb-4 last:mb-0 block'>
+              <PostCard post={post} keyword={filter.q} />
+            </Link>
+          ))
+        ) : (
+          <Card className='p-0 w-full'>
+            <CardContent className='p-8 text-center'>
+              <Newspaper className='mx-auto h-12 w-12 text-muted-foreground mb-4' />
+              <h3 className='font-medium mb-2'>Post is empty with "{filter.q}"</h3>
+              <p className='text-muted-foreground'>Try with another keyword</p>
+            </CardContent>
+          </Card>
         )}
-        {page >= totalPages && <div className='text-gray-500 mt-2'>No more posts.</div>}
+
+        {isLoading && <PostSkeletonCard className='mb-4 last:mb-0' />}
+
+        {!isLoading && page < totalPages && (
+          <div className='w-full flex justify-center'>
+            <Button
+              disabled={isLoading}
+              onClick={handleLoadMore}
+              className='bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white hover:opacity-90'>
+              Load More
+            </Button>
+          </div>
+        )}
       </div>
 
       <Trending className='w-1/4 sticky top-[81px] z-50 hidden lg:block' />
@@ -97,5 +108,32 @@ export const Route = createFileRoute('/_view/')({
 
     return { posts: data?.posts || [], filter: search, totalPages };
   },
-  pendingComponent: () => <div>loading...</div>,
+  pendingComponent: () => (
+    <div className='flex flex-col md:flex-row items-start justify-center gap-x-6 xl:gap-x-12 pt-4 pb-5'>
+      <div className='w-full md:w-1/3 lg:w-1/4 sticky top-[65px] md:top-[81px] z-50 pb-4'>
+        {/* Filter skeleton */}
+        <div className='space-y-3 p-4 border rounded-xl'>
+          <div className='h-6 w-2/3 bg-gray-200 rounded animate-pulse' />
+          <div className='h-10 w-full bg-gray-200 rounded animate-pulse' />
+          <div className='h-10 w-full bg-gray-200 rounded animate-pulse' />
+        </div>
+      </div>
+
+      <div className='flex-1 w-full'>
+        {Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
+          <PostSkeletonCard key={index} className='mb-4 last:mb-0' />
+        ))}
+      </div>
+
+      {/* Right rail placeholder */}
+      <div className='w-1/4 sticky top-[81px] z-50 hidden lg:block'>
+        <div className='space-y-3'>
+          <div className='h-6 w-1/2 bg-gray-200 rounded animate-pulse' />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className='h-24 w-full bg-gray-200 rounded animate-pulse' />
+          ))}
+        </div>
+      </div>
+    </div>
+  ),
 });

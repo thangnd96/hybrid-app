@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Search, Menu, LogOut } from 'lucide-react';
+import { Search, Menu, LogOut, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/authStore';
 import { toast } from 'sonner';
@@ -105,52 +105,56 @@ function AuthenticateHeader({ children }: PropsWithChildren) {
       </div>
 
       {/* Mobile Menu Button */}
-      <div className='md:hidden'>
-        {isAuthenticated ? (
-          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant='ghost' size='sm'>
-                <Menu className='h-5 w-5' />
-              </Button>
-            </SheetTrigger>
-
-            <SheetContent side='right' className='w-80'>
-              <div className='flex flex-col space-y-6 mt-6'>
-                {/* Mobile Search */}
-                {children}
-
-                {/* User Info */}
-                <div className='flex items-center space-x-3 p-3 border rounded-lg'>
-                  <Avatar className='h-10 w-10'>
-                    <AvatarImage src={user?.image} alt={username} />
-                    <AvatarFallback>{getUserInitials()}</AvatarFallback>
-                  </Avatar>
-                  <div className='flex-1 min-w-0'>
-                    <p className='font-medium truncate capitalize'>{fullName}</p>
-                    <p className='text-sm text-muted-foreground truncate'>{user?.email}</p>
-                  </div>
-                </div>
-
-                {/* Mobile Menu Items */}
-                <div className='space-y-2'>
-                  <Button
-                    variant='ghost'
-                    className='w-full justify-start text-destructive hover:text-destructive'
-                    onClick={handleLogout}>
-                    <LogOut className='mr-2 h-4 w-4' />
-                    Log out
-                  </Button>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
-        ) : (
-          <Link to='/login' preload={false}>
+      <div className='md:hidden flex items-center'>
+        {!isAuthenticated && (
+          <Link to='/login' preload={false} className='mr-2'>
             <Button variant='ghost' size='sm'>
               Sign In
             </Button>
           </Link>
         )}
+
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant='ghost' size='sm'>
+              <Menu className='h-5 w-5' />
+            </Button>
+          </SheetTrigger>
+
+          <SheetContent side='right' className='w-80'>
+            <div className='flex flex-col space-y-6 mt-6'>
+              {/* Mobile Search */}
+              {children}
+
+              {isAuthenticated && (
+                <>
+                  {/* User Info */}
+                  <div className='flex items-center space-x-3 p-3 border rounded-lg'>
+                    <Avatar className='h-10 w-10'>
+                      <AvatarImage src={user?.image} alt={username} />
+                      <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                    </Avatar>
+                    <div className='flex-1 min-w-0'>
+                      <p className='font-medium truncate capitalize'>{fullName}</p>
+                      <p className='text-sm text-muted-foreground truncate'>{user?.email}</p>
+                    </div>
+                  </div>
+
+                  {/* Mobile Menu Items */}
+                  <div className='space-y-2'>
+                    <Button
+                      variant='ghost'
+                      className='w-full justify-start text-destructive hover:text-destructive'
+                      onClick={handleLogout}>
+                      <LogOut className='mr-2 h-4 w-4' />
+                      Log out
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </>
   );
@@ -196,10 +200,20 @@ function SearchHeader({ filter, isMobile = false }: HeaderProps & { isMobile?: b
             placeholder='Search posts...'
             value={localSearchQuery}
             onChange={handleChangeSearch}
-            className='pl-9'
+            className='pl-9 pr-9'
           />
+          {localSearchQuery && (
+            <button
+              type='button'
+              onClick={() => setLocalSearchQuery('')}
+              className='absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'>
+              <X className='h-4 w-4' />
+            </button>
+          )}
         </div>
-        <Button type='submit' className='w-full'>
+        <Button
+          type='submit'
+          className='w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white hover:opacity-90'>
           Search
         </Button>
       </form>
@@ -209,18 +223,30 @@ function SearchHeader({ filter, isMobile = false }: HeaderProps & { isMobile?: b
   return (
     <form
       onSubmit={handleSearchSubmit}
-      className='hidden md:flex items-center space-x-2 flex-1 max-w-md mx-8'>
+      className='hidden md:flex items-center space-x-2 flex-1 max-w-xl mx-8'>
       <div className='relative flex-1'>
+        {/* <div className='absolute inset-0 rounded-full bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-500/20 blur-xl' /> */}
         <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4' />
         <Input
           type='search'
           placeholder='Search posts...'
           value={localSearchQuery}
           onChange={handleChangeSearch}
-          className='pl-9 w-full'
+          className='pl-9 pr-1 w-full rounded-full'
         />
+        {/* {localSearchQuery && (
+          <button
+            type='button'
+            onClick={() => setLocalSearchQuery('')}
+            className='absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground'>
+            <X className='h-4 w-4' />
+          </button>
+        )} */}
       </div>
-      <Button type='submit' variant='outline' size='sm'>
+      <Button
+        type='submit'
+        size='sm'
+        className='rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white hover:opacity-90'>
         Search
       </Button>
     </form>
