@@ -2,6 +2,7 @@ import { createFileRoute, Outlet } from '@tanstack/react-router';
 import type { FunctionComponent } from 'react';
 import { LayoutWrapper } from '@/components/layout/LayoutWrapper';
 import Header from '@/components/layout/Header';
+import FloatingGeolocationButton from '@/components/FloatingGeolocationButton';
 
 export const noneAuthFallback = '/';
 
@@ -15,6 +16,8 @@ const NoneAuthComponent: FunctionComponent = () => {
           <Outlet />
         </div>
       </div>
+
+      <FloatingGeolocationButton allowDesktopTesting />
     </LayoutWrapper>
   );
 };

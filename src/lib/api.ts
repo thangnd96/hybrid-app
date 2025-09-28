@@ -7,6 +7,11 @@ export const api = axios.create({
   timeout: 10000,
 });
 
+export const geolocationApi = axios.create({
+  baseURL: 'https://nominatim.openstreetmap.org',
+  timeout: 10000,
+});
+
 // attach auth token if present (mock)
 api.interceptors.request.use(config => {
   const authStore = JSON.parse(localStorage.getItem(KEYS.AUTH_STORAGE) || '{}');
